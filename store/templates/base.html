@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,6 +11,7 @@
 
     <nav class="navbar navbar-expand-lg navbar-light bg-dark" style="background-color: #e3f2fd;">
         <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'product_list' %}" style="color: white;">корзина</a>
             <a class="navbar-brand" href="{% url 'product_list' %}" style="color: white;">Простой магазин</a>
             <div class="navbar-nav">
                 <a class="nav-link" href="{% url 'product_list' %}" style="color: white;">Товары</a>
@@ -20,6 +21,7 @@
         </div>  
            <div class="container">
         </div>
+        <a class="navbar-brand" href="{% url 'product_list' %}" style="color: white;">корзина</a>
         <a class="nav-link"  style="color: white;"href="#">Мой магазин</a>
         <div class="collapse navbar-collapse">  
             <ul class ="navbar-nav me-auto">
