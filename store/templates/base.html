@@ -1,44 +1,91 @@
- <!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Простой магазин</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-</head>
-<body>
-    
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <nav
+      class="navbar navbar-expand-lg navbar-light bg-dark"
+      style="background-color: #e3f2fd"
+    >
+      <div class="container-fluid">
+        <a
+          class="navbar-brand"
+          href="{% url 'product_list' %}"
+          style="color: white"
+          >корзина</a
+        >
+        <a
+          class="navbar-brand"
+          href="{% url 'product_list' %}"
+          style="color: white"
+          >Простой магазин</a
+        >
+    <div class="navbar-nav">
+          <a
+            class="nav-link"
+            href="{% url 'product_list' %}"
+            style="color: white"
+            >Товары</a
+          >
+          <a class="nav-link" href="{% url 'about' %}" style="color: white"
+            >О нас</a
+          >
+          <a
+            class="nav-link"
+            href="{% url 'product_list' %}"
+            style="color: white"
+            >Главная</a
+          >
+        </div>
+      </div>
+      <div class="container"></div>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-dark" style="background-color: #e3f2fd;">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'product_list' %}" style="color: white;">корзина</a>
-            <a class="navbar-brand" href="{% url 'product_list' %}" style="color: white;">Простой магазин</a>
-            <div class="navbar-nav">
-                <a class="nav-link" href="{% url 'product_list' %}" style="color: white;">Товары</a>
-                <a class="nav-link" href="{% url 'about' %}" style="color: white;">О нас</a>
-                <a class="nav-link" href="{% url 'product_list' %}" style="color: white;">Главная</a>
-            </div>
-        </div>  
-           <div class="container">
-        </div>
-        <a class="navbar-brand" href="{% url 'product_list' %}" style="color: white;">корзина</a>
-        <a class="nav-link"  style="color: white;"href="#">Мой магазин</a>
-        <div class="collapse navbar-collapse">  
-            <ul class ="navbar-nav me-auto">
-                <li>
-                    <a class="nav-link" style="color: white;" href="{% url 'about' %}">О магазине</a>
-                
-                </li>
-            </ul>
-        </div>
+      <div class="dropdown">
+        <button
+          class="btn btn-secondary dropdown-toggle"
+          type="button"
+          id="dropdownMenuButton1"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          {{user.username}}
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+          <li>
+            <a class="dropdown-item" href="Logout">LogOut</a>
+          </li>
+        </ul>
+    </div>
+      <a class="navbar-brand" href="login" style="color: white">войти</a>
+      <a class="nav-link" style="color: white" href="#">Мой магазин</a>
+
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav me-auto">
+          <li>
+            <a class="nav-link" style="color: white" href="{% url 'about' %}"
+              >О магазине</a
+            >
+          </li>
+        </ul>
+      </div>
     </nav>
 
-    <hr>
-    <div class="container">
-        {% block content %}
-        {% endblock %}
-    </div>
+    <hr />
+    <div class="container">{% block content %} {% endblock %}</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-</body>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+  </body>
 </html>
