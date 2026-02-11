@@ -61,11 +61,12 @@
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
           <li>
-            <a class="dropdown-item" href="Logout">LogOut</a>
+            <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+
           </li>
         </ul>
     </div>
-      <a class="navbar-brand" href="login" style="color: white">войти</a>
+      <a class="navbar-brand" href="{% url 'login' %}" style="color: white">войти</a>
       <a class="nav-link" style="color: white" href="#">Мой магазин</a>
 
       <div class="collapse navbar-collapse">
