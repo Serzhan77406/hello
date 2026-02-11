@@ -1,21 +1,28 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
-from .forms import RegisterForm, LoginForm
-from .models import Product, Order, OrderItem
-from .cart import Cart, CartItem
-from yookassa import Configuration, Payment
+from django.http import JsonResponse
 from django.conf import settings
 import uuid
-from django.http import JsonResponse
 
+# формы
+from .forms import RegisterForm, LoginForm
+
+# модели
+from .models import Product, Order, OrderItem
+
+# корзина
+from .cart import Cart, CartItem
+
+# YooKassa
+from yookassa import Configuration, Payment
+
+# Настройка YooKassa
 Configuration.account_id = settings.YOOKASSA_SHOP_ID
 Configuration.secret_key = settings.YOOKASSA_SECRET_KEY
 
-def remove_from_cart(request, product_id):
-    pass
 
-
+# --- Аккаунт ---
 def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -33,7 +40,7 @@ def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
         if form.is_valid():
-            user = form.get_user()   # ❗ вызов метода
+            user = form.get_user()
             login(request, user)
             return redirect('product_list')
     else:
@@ -46,39 +53,32 @@ def logout_view(request):
     return redirect('login')
 
 
+# --- Продукты ---
 def product_list(request):
     products = Product.objects.all()
-    return render(request, 'store/product_list.html', {
-        'products': products
-    })
+    return render(request, 'store/product_list.html', {'products': products})
 
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    return render(request, 'store/product_detail.html', {
-        'product': product
-    })
+    return render(request, 'store/product_detail.html', {'product': product})
 
 
 def about(request):
     return render(request, 'store/about.html')
 
 
+# --- Корзина ---
 @login_required
 def view_cart(request):
     cart, created = Cart.objects.get_or_create(user=request.user)
-
     items = cart.items.all()
-
     total_price = sum(item.get_total_price() for item in items)
-
-    context = {
+    return render(request, 'cart/cart.html', {
         'cart': cart,
         'items': items,
         'total_price': total_price,
-    }
-
-    return render(request, 'cart/cart.html', context)
+    })
 
 
 @login_required
@@ -95,24 +95,46 @@ def add_to_cart(request, product_id):
 
     return redirect('view_cart')
 
+
+@login_required
+def remove_from_cart(request, product_id):
+    cart, created = Cart.objects.get_or_create(user=request.user)
+    try:
+        cart_item = CartItem.objects.get(cart=cart, product_id=product_id)
+        cart_item.delete()
+    except CartItem.DoesNotExist:
+        pass
+    return redirect('view_cart')
+
+
 def update_cart_item(request):
     return JsonResponse({'status': 'ok'})
 
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect, render
-from .models import Product, Cart, Order
-import uuid
 
+# --- Платежи ---
 @login_required
 def create_payment(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    cart, created = Cart.objects.get_or_create(user=request.user)
-    items = cart.items.all()
-    total_price = sum(item.get_total_price() for item in items)
 
+    # Создаём заказ
+    order = Order.objects.create(
+        user=request.user,
+        total_price=product.price,  # цена всего заказа (здесь один продукт)
+        payment_id='temp',          # временно, потом заменим на payment.id
+        status='pending'
+    )
+
+    # Создаём элемент заказа
+    OrderItem.objects.create(
+        order=order,
+        product=product,
+        quantity=1
+    )
+
+    # Создаём платеж в YooKassa
     payment = Payment.create({
         "amount": {
-            "value": str(total_price),
+            "value": str(order.total_price),
             "currency": "RUB"
         },
         "confirmation": {
@@ -123,15 +145,12 @@ def create_payment(request, product_id):
         "description": f"Оплата {product.name}"
     }, str(uuid.uuid4()))
 
-    Order.objects.create(
-        product=product,
-        user=request.user,
-        payment_id=payment.id,
-        status="pending"
-    )
+    # Сохраняем реальный payment_id
+    order.payment_id = payment.id
+    order.save()
 
+    # Редирект на оплату
     return redirect(payment.confirmation.confirmation_url)
-
 
 def payment_success(request):
     return render(request, "payment_success.html")
